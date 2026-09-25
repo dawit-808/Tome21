@@ -1,4 +1,5 @@
 import {} from "react";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   return (
@@ -6,9 +7,11 @@ export default function Header() {
       {/* Main Top Nav */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         {/* Brand Logo */}
-        <div className="text-3xl font-extrabold tracking-tight cursor-pointer">
-          Tome<span className="text-yellow-300">21</span>
-        </div>
+        <Link to="/">
+          <div className="text-3xl font-extrabold tracking-tight cursor-pointer">
+            Tome<span className="text-yellow-300">21</span>
+          </div>
+        </Link>
 
         {/* Search Bar */}
         <div className="hidden md:flex flex-1 max-w-2xl relative shadow-sm rounded-lg overflow-hidden bg-white">
@@ -36,7 +39,7 @@ export default function Header() {
 
         {/* Right Actions */}
         <div className="flex items-center space-x-6">
-          <div className="hidden lg:flex items-center space-x-1 cursor-pointer hover:text-yellow-200 transition">
+          <div className="cursor-pointer hidden lg:flex items-center space-x-1  hover:text-yellow-200 transition">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -54,22 +57,24 @@ export default function Header() {
           </div>
 
           {/* Cart Button */}
-          <button className="bg-yellow-400 text-gray-900 px-6 py-2 rounded-lg font-bold shadow-sm hover:bg-yellow-300 hover:shadow transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
-            CART
-          </button>
+          <Link to="/cart">
+            <button className="cursor-pointer bg-yellow-400 text-gray-900 px-6 py-2 rounded-lg font-bold shadow-sm hover:bg-yellow-300 hover:shadow transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              CART
+            </button>
+          </Link>
         </div>
       </div>
 

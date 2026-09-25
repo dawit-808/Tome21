@@ -75,7 +75,7 @@ export default function Home() {
               Shop the best quality products
             </h2>
             <p className="text-lg text-green-50 mb-6 drop-shadow-sm">
-              Premium electronics, fashion, and more—delivered to you.
+              Premium electronics, fashion, and more delivered to you.
             </p>
             <button className="bg-white text-[#3e9d24] px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition shadow-sm">
               Start Shopping
