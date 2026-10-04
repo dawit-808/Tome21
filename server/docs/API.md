@@ -131,22 +131,96 @@ Body:
 
 }
 
-Response:  {id + itself}
+Response: {id + itself}
 
 ### Delete catagory
 
 DELETE /categories/1 (:id)
 
-Response: 
+Response:
 
 {
-   "message": "Category deleted successfully",
-   "catagory": {itself}
+"message": "Category deleted successfully",
+"catagory": {itself}
 }
-
 
 ## product Images
 
 ### create Product img
 
-POST /
+POST /product-images/product/1
+
+Body:
+{
+"image_url": "https://example.com/nike-front.jpg",
+"sort_order": 0
+}
+
+Response:
+
+{
+"id": "1",
+"product_id": "1",
+"image_url": "https://example.com/nike-front.jpg",
+"sort_order": 0
+}
+
+### Get all img for a product
+
+Get /product-images/product/1
+
+res:
+[
+{
+"id": "1",
+"product_id": "1",
+"image_url": "https://example.com/nike-front.jpg",
+"sort_order": 0
+}
+]
+
+### Get single img
+
+GET /product-images/1
+
+res :
+{
+"id": "1",
+"product_id": "1",
+"image_url": "https://example.com/nike-side.jpg",
+"sort_order": 3
+}
+
+### Update product_img
+
+PUT /product-images/1
+
+Body: 
+{
+  "image_url": "https://example.com/nike-new.jpg",
+  "sort_order": 0
+}
+
+res: 
+
+{
+"id": "1",
+"product_id": "1",
+"image_url": "https://example.com/nike-side.jpg",
+"sort_order": 3
+}
+
+### Delete Prod_img
+
+DELETE /product-images/2
+
+res:
+{
+    "message": "Product image deleted successfully",
+    "image": {
+        "id": "2",
+        "product_id": "1",
+        "image_url": "https://example.com/nike-side.jpg",
+        "sort_order": 1
+    }
+}
