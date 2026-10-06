@@ -1,0 +1,49 @@
+import express from "express";
+import passport from "../config/passport.js";
+import { requireAuth } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+// Public — starts Google login
+router.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  }),
+);
+
+// Public — Google redirects here after login
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+  }),
+  (req, res) => {
+    res.json({
+      message: "Login successful",
+      user: req.user,
+    });
+  },
+);
+
+// Protected — only logged-in users
+router.get("/me", requireAuth, (req, res) => {
+  res.status(200).json({
+    user: req.user,
+  });
+});
+
+// Protected — only logged-in users
+router.post("/logout", requireAuth, (req, res, next) => {
+  req.logout((error) => {
+    if (error) {
+      return next(error);
+    }
+
+    res.json({
+      message: "Logged out successfully",
+    });
+  });
+});
+
+export default router;

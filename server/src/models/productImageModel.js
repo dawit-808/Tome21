@@ -8,7 +8,7 @@ export const getImagesByProductId = async (productId) => {
       WHERE product_id = $1
       ORDER BY sort_order ASC, id ASC
     `,
-    [productId]
+    [productId],
   );
 
   return result.rows;
@@ -21,7 +21,7 @@ export const getImageById = async (id) => {
       FROM product_images
       WHERE id = $1
     `,
-    [id]
+    [id],
   );
 
   return result.rows[0];
@@ -30,7 +30,7 @@ export const getImageById = async (id) => {
 export const createProductImage = async (
   productId,
   imageUrl,
-  sortOrder = 0
+  sortOrder = 0,
 ) => {
   const result = await query(
     `
@@ -42,17 +42,13 @@ export const createProductImage = async (
       VALUES ($1, $2, $3)
       RETURNING *
     `,
-    [productId, imageUrl, sortOrder]
+    [productId, imageUrl, sortOrder],
   );
 
   return result.rows[0];
 };
 
-export const updateProductImage = async (
-  id,
-  imageUrl,
-  sortOrder
-) => {
+export const updateProductImage = async (id, imageUrl, sortOrder) => {
   const result = await query(
     `
       UPDATE product_images
@@ -62,11 +58,13 @@ export const updateProductImage = async (
       WHERE id = $3
       RETURNING *
     `,
-    [imageUrl, sortOrder, id]
+    [imageUrl, sortOrder, id],
   );
 
   return result.rows[0];
 };
+
+// img has delete on cascade so when the product deleted potgress deletes it automatically
 
 export const deleteProductImage = async (id) => {
   const result = await query(
@@ -75,7 +73,7 @@ export const deleteProductImage = async (id) => {
       WHERE id = $1
       RETURNING *
     `,
-    [id]
+    [id],
   );
 
   return result.rows[0];

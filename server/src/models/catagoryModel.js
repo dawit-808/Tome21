@@ -17,7 +17,7 @@ export const getCategoryById = async (id) => {
       FROM categories
       WHERE id = $1
     `,
-    [id]
+    [id],
   );
 
   return result.rows[0];
@@ -30,7 +30,7 @@ export const createCategory = async (name) => {
       VALUES ($1)
       RETURNING *
     `,
-    [name]
+    [name],
   );
 
   return result.rows[0];
@@ -44,7 +44,7 @@ export const updateCategory = async (id, name) => {
       WHERE id = $2
       RETURNING *
     `,
-    [name, id]
+    [name, id],
   );
 
   return result.rows[0];
@@ -57,7 +57,7 @@ export const deleteCategory = async (id) => {
       WHERE id = $1
       RETURNING *
     `,
-    [id]
+    [id],
   );
 
   return result.rows[0];

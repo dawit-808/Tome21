@@ -7,13 +7,15 @@ import {
   updateProductController,
   deleteProductController,
 } from "../controllers/productController.js";
+import { requireAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.get("/", getProducts);
 router.get("/:id", getProduct);
-router.post("/", createProductController);
-router.put("/:id", updateProductController);
-router.delete("/:id", deleteProductController);
+
+router.post("/", requireAdmin, createProductController);
+router.put("/:id", requireAdmin, updateProductController);
+router.delete("/:id", requireAdmin, deleteProductController);
 
 export default router;

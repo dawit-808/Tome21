@@ -8,8 +8,17 @@ const port = process.env.PORT || 5000;
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productImageRoutes from "./routes/productImageRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
+// auth
 
+import session from "express-session";
+import passport from "./config/passport.js";
+import authRoutes from "./routes/authRoutes.js";
+
+// admin
+import adminOrderRoutes from "./routes/adminOrderRoutes.js";
 
 app.use(express.json());
 
@@ -26,6 +35,19 @@ app.get("/api", async (req, res) => {
   }
 });
 
+//auth
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  }),
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use("/api/auth", authRoutes);
 // initial schema creator
 
 // import { readFile } from "node:fs/promises";
@@ -48,6 +70,9 @@ app.get("/api", async (req, res) => {
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/product-images", productImageRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/admin/orders", adminOrderRoutes);
 
 app.listen(port, () => {
   console.log(`server running on http://localhost:${port}/api`);

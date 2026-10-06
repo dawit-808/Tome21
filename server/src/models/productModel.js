@@ -10,11 +10,22 @@ export const getAllProducts = async () => {
       p.stock,
       p.category_id,
       c.name AS category_name,
+
+      (
+        SELECT pi.image_url
+        FROM product_images pi
+        WHERE pi.product_id = p.id
+        ORDER BY pi.sort_order ASC, pi.id ASC
+        LIMIT 1
+      ) AS image_url,
+
       p.created_at,
       p.updated_at
+
     FROM products p
     JOIN categories c
       ON p.category_id = c.id
+
     ORDER BY p.created_at DESC
   `);
 
@@ -22,7 +33,7 @@ export const getAllProducts = async () => {
 };
 
 export const getProductById = async (id) => {
-  const result = await query(
+  const productResult = await query(
     `
       SELECT
         p.id,
@@ -42,7 +53,27 @@ export const getProductById = async (id) => {
     [id]
   );
 
-  return result.rows[0];
+  if (productResult.rows.length === 0) {
+    return null;
+  }
+
+  const imageResult = await query(
+    `
+      SELECT
+        id,
+        image_url,
+        sort_order
+      FROM product_images
+      WHERE product_id = $1
+      ORDER BY sort_order ASC, id ASC
+    `,
+    [id]
+  );
+
+  return {
+    ...productResult.rows[0],
+    images: imageResult.rows,
+  };
 };
 
 export const createProduct = async ({
