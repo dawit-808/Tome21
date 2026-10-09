@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { query } from "./config/db.js";
 const app = express();
+import cors from "cors"
 const port = process.env.PORT || 5000;
 
 import productRoutes from "./routes/productRoutes.js";
@@ -21,6 +22,7 @@ import authRoutes from "./routes/authRoutes.js";
 import adminOrderRoutes from "./routes/adminOrderRoutes.js";
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/api", async (req, res) => {
   try {

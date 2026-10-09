@@ -23,31 +23,20 @@ export const getCategoryById = async (id) => {
   return result.rows[0];
 };
 
-export const createCategory = async (name) => {
+export const createCategory = async (name, image_url) => {
   const result = await query(
-    `
-      INSERT INTO categories (name)
-      VALUES ($1)
-      RETURNING *
-    `,
-    [name],
+    ` INSERT INTO categories (name, image_url) VALUES ($1, $2) RETURNING * `,
+    [name, image_url],
   );
-
   return result.rows[0];
 };
 
-export const updateCategory = async (id, name) => {
+export const updateCategory = async (id, name, image_url) => {
   const result = await query(
-    `
-      UPDATE categories
-      SET name = $1
-      WHERE id = $2
-      RETURNING *
-    `,
-    [name, id],
+    ` UPDATE categories SET name = $1, image_url = $2 WHERE id = $3 RETURNING * `,
+    [name, image_url, id],
   );
-
-  return result.rows[0];
+  return result.rows[0] ?? null;
 };
 
 export const deleteCategory = async (id) => {
