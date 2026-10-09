@@ -6,12 +6,14 @@ import {
   createProductController,
   updateProductController,
   deleteProductController,
+  getFeaturedProducts,
 } from "../controllers/productController.js";
 import { requireAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.get("/", getProducts);
+router.get("/featured", getFeaturedProducts);
 router.get("/:id", getProduct);
 
 router.post("/", requireAdmin, createProductController);

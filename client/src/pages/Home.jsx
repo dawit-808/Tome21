@@ -9,19 +9,19 @@ const apiEndpoint = import.meta.env.VITE_API_URL;
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getData = async () => {
       try {
         const categories = await axios.get(`${apiEndpoint}/categories`);
-        const products = await axios.get(`${apiEndpoint}/products`);
+        const products = await axios.get(`${apiEndpoint}/products/featured`);
         setCategories(categories.data);
         setProducts(products.data);
       } catch (error) {
         console.error(error.message);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
     getData();

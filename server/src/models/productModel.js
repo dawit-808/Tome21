@@ -32,6 +32,39 @@ export const getAllProducts = async () => {
   return result.rows;
 };
 
+export const getTopProducts = async () => {
+  const result = await query(`
+    SELECT
+      p.id,
+      p.name,
+      p.description,
+      p.price,
+      p.stock,
+      p.category_id,
+      c.name AS category_name,
+
+      (
+        SELECT pi.image_url
+        FROM product_images pi
+        WHERE pi.product_id = p.id
+        ORDER BY pi.sort_order ASC, pi.id ASC
+        LIMIT 1
+      ) AS image_url,
+
+      p.created_at,
+      p.updated_at
+
+    FROM products p
+    JOIN categories c
+      ON p.category_id = c.id
+
+    ORDER BY p.created_at DESC
+    LIMIT 8
+  `);
+
+  return result.rows;
+};
+
 export const getProductById = async (id) => {
   const productResult = await query(
     `
@@ -50,7 +83,7 @@ export const getProductById = async (id) => {
         ON p.category_id = c.id
       WHERE p.id = $1
     `,
-    [id]
+    [id],
   );
 
   if (productResult.rows.length === 0) {
@@ -67,7 +100,7 @@ export const getProductById = async (id) => {
       WHERE product_id = $1
       ORDER BY sort_order ASC, id ASC
     `,
-    [id]
+    [id],
   );
 
   return {
@@ -103,7 +136,7 @@ export const createProduct = async ({
 
 export const updateProduct = async (
   id,
-  { name, description, price, stock, category_id }
+  { name, description, price, stock, category_id },
 ) => {
   const result = await query(
     `
@@ -118,7 +151,7 @@ export const updateProduct = async (
       WHERE id = $6
       RETURNING *
     `,
-    [name, description, price, stock, category_id, id]
+    [name, description, price, stock, category_id, id],
   );
 
   return result.rows[0];
@@ -131,7 +164,7 @@ export const deleteProduct = async (id) => {
       WHERE id = $1
       RETURNING *
     `,
-    [id]
+    [id],
   );
 
   return result.rows[0];

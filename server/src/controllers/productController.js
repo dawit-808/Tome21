@@ -4,11 +4,24 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  getTopProducts,
 } from "../models/productModel.js";
 
 export const getProducts = async (req, res) => {
   try {
     const products = await getAllProducts();
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error getting products", error);
+    res.status(500).json({
+      error: "Faild to get products",
+    });
+  }
+};
+
+export const getFeaturedProducts = async (req, res) => {
+  try {
+    const products = await getTopProducts();
     res.status(200).json(products);
   } catch (error) {
     console.error("Error getting products", error);
