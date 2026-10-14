@@ -1,37 +1,5 @@
 import { query } from "../config/db.js";
 
-export const getAllProducts = async () => {
-  const result = await query(`
-    SELECT
-      p.id,
-      p.name,
-      p.description,
-      p.price,
-      p.stock,
-      p.category_id,
-      c.name AS category_name,
-
-      (
-        SELECT pi.image_url
-        FROM product_images pi
-        WHERE pi.product_id = p.id
-        ORDER BY pi.sort_order ASC, pi.id ASC
-        LIMIT 1
-      ) AS image_url,
-
-      p.created_at,
-      p.updated_at
-
-    FROM products p
-    JOIN categories c
-      ON p.category_id = c.id
-
-    ORDER BY p.created_at DESC
-  `);
-
-  return result.rows;
-};
-
 export const getTopProducts = async () => {
   const result = await query(`
     SELECT
@@ -61,6 +29,43 @@ export const getTopProducts = async () => {
     ORDER BY p.created_at DESC
     LIMIT 8
   `);
+
+  return result.rows;
+};
+
+export const getProductsByCategory = async (categoryId) => {
+  const result = await query(
+    `
+    SELECT
+      p.id,
+      p.name,
+      p.description,
+      p.price,
+      p.stock,
+      p.category_id,
+      c.name AS category_name,
+
+      (
+        SELECT pi.image_url
+        FROM product_images pi
+        WHERE pi.product_id = p.id
+        ORDER BY pi.sort_order ASC, pi.id ASC
+        LIMIT 1
+      ) AS image_url,
+
+      p.created_at,
+      p.updated_at
+
+    FROM products p
+    JOIN categories c
+      ON p.category_id = c.id
+
+    WHERE p.category_id = $1
+
+    ORDER BY p.created_at DESC
+    `,
+    [categoryId],
+  );
 
   return result.rows;
 };

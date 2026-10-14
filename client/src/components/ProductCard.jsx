@@ -1,10 +1,11 @@
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ product, onAddToCart, onClick }) => {
   // Convert price string to number for formatting
   const numericPrice = Number(product.price);
   const formattedPrice = isNaN(numericPrice)
     ? product.price
-    : numericPrice.toLocaleString('en-US', { minimumFractionDigits: 2 });
+    : numericPrice.toLocaleString("en-US", { minimumFractionDigits: 2 });
 
   return (
     <div
@@ -12,20 +13,22 @@ const ProductCard = ({ product, onAddToCart, onClick }) => {
       className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer relative"
     >
       {/* Image Container */}
-      <div className="h-48 bg-gray-100 relative overflow-hidden">
-        <img
-          src={product.image_url}
-          alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          loading="lazy"
-        />
-        {/* Optional Stock Badge */}
-        {product.stock <= 5 && product.stock > 0 && (
-          <span className="absolute top-2 left-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-            Only {product.stock} Left
-          </span>
-        )}
-      </div>
+      <Link to="/product-details">
+        <div className="h-48 bg-gray-100 relative overflow-hidden">
+          <img
+            src={product.image_url}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+          />
+          {/*  Stock Badge */}
+          {product.stock <= 5 && product.stock > 0 && (
+            <span className="absolute top-2 left-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+              Only {product.stock} Left
+            </span>
+          )}
+        </div>
+      </Link>
 
       {/* Card Content */}
       <div className="p-4 flex flex-col flex-grow">
@@ -55,7 +58,9 @@ const ProductCard = ({ product, onAddToCart, onClick }) => {
         {/* Price & Action */}
         <div className="mt-auto pt-2 flex items-center justify-between">
           <div>
-            <span className="text-xs text-gray-400 font-medium block">Price</span>
+            <span className="text-xs text-gray-400 font-medium block">
+              Price
+            </span>
             <p className="text-[#3e9d24] text-lg font-bold leading-none">
               ETB {formattedPrice}
             </p>

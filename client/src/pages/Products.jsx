@@ -1,77 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import ProductCard from "../components/ProductCard";
+import axios from "axios";
 
-// ==========================================
-// MOCK DATABASE DATA
-// ==========================================
-const MOCK_CATEGORIES = [
-  "All",
-  "Vehicles",
-  "Property",
-  "Phones",
-  "Electronics",
-  "Fashion",
-  "Beauty",
-];
-
-const MOCK_PRODUCTS = [
-  {
-    id: 101,
-    title: "Toyota Vitz 2018 Excellent Condition",
-    price: 1200000,
-    category: "Vehicles",
-    location: "Bole",
-    image: "img1",
-  },
-  {
-    id: 102,
-    title: "Samsung Galaxy S23 Ultra - 256GB",
-    price: 65000,
-    category: "Phones",
-    location: "Piassa",
-    image: "img2",
-  },
-  {
-    id: 103,
-    title: "Modern L-Shape Sofa with Cushions",
-    price: 45000,
-    category: "Home",
-    location: "Megenagna",
-    image: "img3",
-  },
-  {
-    id: 104,
-    title: "Men's Classic Leather Jacket",
-    price: 4500,
-    category: "Fashion",
-    location: "Kazanchis",
-    image: "img4",
-  },
-  {
-    id: 105,
-    title: "Apple MacBook Pro M2 16GB RAM",
-    price: 125000,
-    category: "Electronics",
-    location: "Bole",
-    image: "img5",
-  },
-  {
-    id: 106,
-    title: "Nike Air Force 1 Sneakers",
-    price: 6000,
-    category: "Fashion",
-    location: "Megenagna",
-    image: "img6",
-  },
-];
+const apiEndpoint = import.meta.env.VITE_API_URL;
 
 export default function Products() {
-  // State for filters (Ready for your backend API integration)
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+
+  const activeCategoryName =
+    categories.find((cat) => String(cat.id) === activeCategory)?.name ||
+    "All Categories";
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const categoriesResponse = await axios.get(`${apiEndpoint}/categories`);
+
+        const productsUrl = activeCategory
+          ? `${apiEndpoint}/products/category/${activeCategory}`
+          : `${apiEndpoint}/products`;
+
+        const productsResponse = await axios.get(productsUrl);
+
+        setCategories(categoriesResponse.data);
+        setProducts(productsResponse.data);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+
+    getData();
+  }, [activeCategory]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -86,21 +53,72 @@ export default function Products() {
             <h3 className="font-bold text-gray-800 mb-4 uppercase tracking-wider text-sm">
               Categories
             </h3>
-            <ul className="space-y-2">
-              {MOCK_CATEGORIES.map((cat) => (
-                <li key={cat}>
-                  <button
-                    onClick={() => setActiveCategory(cat)}
-                    className={`w-full text-left text-sm py-1.5 px-2 rounded transition-colors ${
-                      activeCategory === cat
-                        ? "bg-[#3e9d24] text-white font-medium"
-                        : "text-gray-600 hover:bg-green-50 hover:text-[#3e9d24]"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                </li>
-              ))}
+            <ul className="space-y-1.5">
+              <li>
+                <button
+                  onClick={() => setActiveCategory("")}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium ${
+                    activeCategory === ""
+                      ? "bg-[#3e9d24] text-white"
+                      : "text-gray-700 hover:bg-green-50"
+                  }`}
+                >
+                  All Categories
+                </button>
+              </li>
+              {categories.map((cat) => {
+                const isActive = activeCategory === String(cat.id);
+                return (
+                  <li key={cat.id}>
+                    <button
+                      onClick={() => setActiveCategory(String(cat.id))}
+                      className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200 text-left ${
+                        isActive
+                          ? "bg-[#3e9d24] text-white shadow-sm"
+                          : "text-gray-700 bg-gray-50/60 hover:bg-green-50 hover:text-[#3e9d24]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {/* Small round image */}
+                        <img
+                          src={cat.image_url}
+                          alt={cat.name || "Category"}
+                          className={`w-7 h-7 rounded-full object-cover flex-shrink-0 transition-transform duration-200 ${
+                            isActive
+                              ? "ring-2 ring-white/50"
+                              : "border border-gray-200"
+                          }`}
+                        />
+
+                        {/* Category Name */}
+                        <span className="truncate">{cat.name}</span>
+                      </div>
+
+                      {/* Cool Checkmark Badge */}
+                      <div
+                        className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
+                          isActive
+                            ? "bg-white text-[#3e9d24] scale-100 opacity-100"
+                            : "border border-gray-300 scale-95 opacity-40 group-hover:border-[#3e9d24]"
+                        }`}
+                      >
+                        <svg
+                          className="w-3 h-3 stroke-[2.5]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4.5 12.75l6 6 9-13.5"
+                          />
+                        </svg>
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -160,10 +178,10 @@ export default function Products() {
           {/* Top Bar: Results Count & Sorting */}
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
             <h1 className="text-gray-800 font-medium">
-              Showing <span className="font-bold">{MOCK_PRODUCTS.length}</span>{" "}
+              Showing <span className="font-bold">{products.length}</span>{" "}
               results for{" "}
               <span className="text-[#3e9d24] font-bold">
-                "{activeCategory}"
+                "{activeCategoryName}"
               </span>
             </h1>
 
@@ -182,100 +200,14 @@ export default function Products() {
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {MOCK_PRODUCTS.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer relative"
-              >
-                {/* Image Container */}
-                <div className="h-48 bg-gray-200 relative overflow-hidden">
-                  <div className="w-full h-full bg-gray-300 group-hover:scale-105 transition-transform duration-500"></div>
-                </div>
 
-                {/* Card Content */}
-                <div className="p-4 flex flex-col flex-grow">
-                  <p className="text-xs text-gray-400 mb-1">
-                    {product.category}
-                  </p>
-                  <h4 className="text-gray-800 font-medium line-clamp-2 leading-snug group-hover:text-[#3e9d24] transition-colors">
-                    {product.title}
-                  </h4>
-                  <div className="mt-auto pt-3">
-                    <p className="text-[#3e9d24] text-xl font-bold">
-                      ETB {product.price.toLocaleString()}
-                    </p>
-                    <div className="flex items-center text-xs text-gray-500 mt-2 gap-1">
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                      {product.location}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Add to Cart Overlay on Hover */}
-                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button className="bg-yellow-400 text-gray-900 p-2 rounded-full shadow hover:bg-yellow-300">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
-          </div>
-
-          {/* Pagination */}
-          <div className="mt-10 flex justify-center items-center gap-2">
-            <button
-              className="px-4 py-2 border border-gray-200 rounded bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-              disabled
-            >
-              Previous
-            </button>
-            <button className="w-10 h-10 rounded bg-[#3e9d24] text-white font-bold shadow">
-              1
-            </button>
-            <button className="w-10 h-10 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">
-              2
-            </button>
-            <button className="w-10 h-10 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">
-              3
-            </button>
-            <button className="px-4 py-2 border border-gray-200 rounded bg-white text-gray-600 hover:bg-gray-50">
-              Next
-            </button>
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   );

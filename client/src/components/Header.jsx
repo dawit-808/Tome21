@@ -6,7 +6,6 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-[#3e9d24] shadow-md text-white font-sans">
       {/* Main Top Nav */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        {/* Brand Logo */}
         <Link to="/">
           <div className="text-3xl font-extrabold tracking-tight cursor-pointer">
             Tome<span className="text-yellow-300">21</span>

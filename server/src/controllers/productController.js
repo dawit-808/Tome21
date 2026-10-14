@@ -1,23 +1,11 @@
 import {
-  getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
   getTopProducts,
+  getProductsByCategory,
 } from "../models/productModel.js";
-
-export const getProducts = async (req, res) => {
-  try {
-    const products = await getAllProducts();
-    res.status(200).json(products);
-  } catch (error) {
-    console.error("Error getting products", error);
-    res.status(500).json({
-      error: "Faild to get products",
-    });
-  }
-};
 
 export const getFeaturedProducts = async (req, res) => {
   try {
@@ -27,6 +15,22 @@ export const getFeaturedProducts = async (req, res) => {
     console.error("Error getting products", error);
     res.status(500).json({
       error: "Faild to get products",
+    });
+  }
+};
+
+export const getProductsByCat = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const products = await getProductsByCategory(categoryId);
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error getting products by category:", error);
+
+    res.status(500).json({
+      error: "Failed to get products by category",
     });
   }
 };
@@ -85,20 +89,9 @@ export const updateProductController = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const {
-      name,
-      description,
-      price,
-      stock,
-      category_id,
-    } = req.body;
+    const { name, description, price, stock, category_id } = req.body;
 
-    if (
-      !name ||
-      price === undefined ||
-      stock === undefined ||
-      !category_id
-    ) {
+    if (!name || price === undefined || stock === undefined || !category_id) {
       return res.status(400).json({
         error: "name, price, stock, and category_id are required",
       });

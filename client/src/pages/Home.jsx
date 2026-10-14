@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ProductCard from "../components/ProductCard";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const apiEndpoint = import.meta.env.VITE_API_URL;
 
@@ -41,9 +42,11 @@ export default function Home() {
             <p className="text-lg text-green-50 mb-6 drop-shadow-sm">
               Premium electronics, fashion, and more delivered to you.
             </p>
-            <button className="bg-white text-[#3e9d24] px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition shadow-sm">
-              Start Shopping
-            </button>
+            <Link to="/products">
+              <button className="bg-white text-[#3e9d24] px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition shadow-sm cursor-pointer">
+                Start Shopping
+              </button>
+            </Link>
           </div>
           <div className="absolute right-0 top-0 w-64 h-full bg-white opacity-10 skew-x-12 transform translate-x-10"></div>
           <div className="absolute right-20 bottom-0 w-32 h-32 bg-yellow-400 rounded-full opacity-20 blur-2xl"></div>
