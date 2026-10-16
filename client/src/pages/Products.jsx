@@ -9,36 +9,71 @@ const apiEndpoint = import.meta.env.VITE_API_URL;
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("");
+  // const [loading, setLoading] = useState(true)
+
+  // parameters for filtering products
+  const [categoryId, setcategoryId] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [condition, setCondition] = useState("");
 
-  const activeCategoryName =
-    categories.find((cat) => String(cat.id) === activeCategory)?.name ||
+  const categoryIdName =
+    categories.find((cat) => String(cat.id) === categoryId)?.name ||
     "All Categories";
 
+  // Reusable function to fetch products based on current filters
+  const fetchProducts = async () => {
+    try {
+      const hasFilters =
+        categoryId !== "" ||
+        minPrice !== "" ||
+        maxPrice !== "" ||
+        sortBy !== "" ||
+        condition !== "";
+
+      const productsUrl = hasFilters
+        ? `${apiEndpoint}/products`
+        : `${apiEndpoint}/products/top`;
+
+      const productsResponse = await axios.get(productsUrl, {
+        params: {
+          categoryId: categoryId !== "" ? categoryId : undefined,
+          minPrice: minPrice !== "" ? minPrice : undefined,
+          maxPrice: maxPrice !== "" ? maxPrice : undefined,
+          sortBy: sortBy !== "" ? sortBy : undefined,
+          condition: condition !== "" ? condition : undefined,
+        },
+      });
+
+      setProducts(productsResponse.data);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    }
+  };
+
+  // Handler for the "Apply Filter"  (Price & Condition)
+  const handleApplyFilters = () => {
+    fetchProducts();
+  };
+
+  // Fetch categories on mount
   useEffect(() => {
-    const getData = async () => {
+    const getCategories = async () => {
       try {
         const categoriesResponse = await axios.get(`${apiEndpoint}/categories`);
-
-        const productsUrl = activeCategory
-          ? `${apiEndpoint}/products/category/${activeCategory}`
-          : `${apiEndpoint}/products`;
-
-        const productsResponse = await axios.get(productsUrl);
-
         setCategories(categoriesResponse.data);
-        setProducts(productsResponse.data);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        console.error("Failed to fetch categories:", error);
       }
     };
+    getCategories();
+  }, []);
 
-    getData();
-  }, [activeCategory]);
+  // Fetch products automatically when Category or Sort changes
+  useEffect(() => {
+    fetchProducts();
+  }, [categoryId, sortBy]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -56,9 +91,9 @@ export default function Products() {
             <ul className="space-y-1.5">
               <li>
                 <button
-                  onClick={() => setActiveCategory("")}
+                  onClick={() => setcategoryId("")}
                   className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium ${
-                    activeCategory === ""
+                    categoryId === ""
                       ? "bg-[#3e9d24] text-white"
                       : "text-gray-700 hover:bg-green-50"
                   }`}
@@ -67,11 +102,11 @@ export default function Products() {
                 </button>
               </li>
               {categories.map((cat) => {
-                const isActive = activeCategory === String(cat.id);
+                const isActive = categoryId === String(cat.id);
                 return (
                   <li key={cat.id}>
                     <button
-                      onClick={() => setActiveCategory(String(cat.id))}
+                      onClick={() => setcategoryId(String(cat.id))}
                       className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200 text-left ${
                         isActive
                           ? "bg-[#3e9d24] text-white shadow-sm"
@@ -79,7 +114,6 @@ export default function Products() {
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        {/* Small round image */}
                         <img
                           src={cat.image_url}
                           alt={cat.name || "Category"}
@@ -89,12 +123,9 @@ export default function Products() {
                               : "border border-gray-200"
                           }`}
                         />
-
-                        {/* Category Name */}
                         <span className="truncate">{cat.name}</span>
                       </div>
 
-                      {/* Cool Checkmark Badge */}
                       <div
                         className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
                           isActive
@@ -121,7 +152,33 @@ export default function Products() {
               })}
             </ul>
           </div>
+          {/* Condition Filter */}
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="font-bold text-gray-800 mb-4 uppercase tracking-wider text-sm">
+              Condition
+            </h3>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={condition === "new"}
+                  onChange={(e) => setCondition(e.target.checked ? "new" : "")}
+                  className="accent-[#3e9d24] w-4 h-4 cursor-pointer rounded"
+                />
+                <span className="text-sm text-gray-600">Brand New</span>
+              </label>
 
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={condition === "used"}
+                  onChange={(e) => setCondition(e.target.checked ? "used" : "")}
+                  className="accent-[#3e9d24] w-4 h-4 cursor-pointer rounded"
+                />
+                <span className="text-sm text-gray-600">Used</span>
+              </label>
+            </div>
+          </div>
           {/* Price Filter */}
           <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
             <h3 className="font-bold text-gray-800 mb-4 uppercase tracking-wider text-sm">
@@ -130,6 +187,7 @@ export default function Products() {
             <div className="flex items-center gap-2 mb-4">
               <input
                 type="number"
+                min="0"
                 placeholder="Min"
                 value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
@@ -138,38 +196,19 @@ export default function Products() {
               <span className="text-gray-400">-</span>
               <input
                 type="number"
+                min="0"
                 placeholder="Max"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
                 className="w-full border border-gray-200 rounded px-2 py-2 text-sm focus:outline-none focus:border-[#3e9d24] focus:ring-1 focus:ring-[#3e9d24]"
               />
             </div>
-            <button className="w-full bg-[#3e9d24] text-white text-sm font-bold py-2 rounded hover:bg-green-700 transition">
+            <button
+              onClick={handleApplyFilters}
+              className="w-full bg-[#3e9d24] text-white text-sm font-bold py-2 rounded hover:bg-green-700 transition shadow-sm active:scale-[0.98] cursor-pointer"
+            >
               Apply Filter
             </button>
-          </div>
-
-          {/* Condition / Other Filters */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-800 mb-4 uppercase tracking-wider text-sm">
-              Condition
-            </h3>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="accent-[#3e9d24] w-4 h-4 cursor-pointer"
-                />
-                <span className="text-sm text-gray-600">Brand New</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="accent-[#3e9d24] w-4 h-4 cursor-pointer"
-                />
-                <span className="text-sm text-gray-600">Used - Like New</span>
-              </label>
-            </div>
           </div>
         </aside>
 
@@ -178,11 +217,7 @@ export default function Products() {
           {/* Top Bar: Results Count & Sorting */}
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
             <h1 className="text-gray-800 font-medium">
-              Showing <span className="font-bold">{products.length}</span>{" "}
-              results for{" "}
-              <span className="text-[#3e9d24] font-bold">
-                "{activeCategoryName}"
-              </span>
+              <span className="text-[#3e9d24] font-bold">{categoryIdName}</span>
             </h1>
 
             <div className="flex items-center gap-2 text-sm">
@@ -200,7 +235,6 @@ export default function Products() {
           </div>
 
           {/* Product Grid */}
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />

@@ -1,7 +1,7 @@
 import express from "express";
 
 import {
-  getProductsByCat,
+  getProductsController,
   getProduct,
   createProductController,
   updateProductController,
@@ -12,8 +12,8 @@ import { requireAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getFeaturedProducts);
-router.get("/category/:categoryId", getProductsByCat);
+router.get("/top", getFeaturedProducts);
+router.get("/", getProductsController);
 router.get("/:id", getProduct);
 
 router.post("/", requireAdmin, createProductController);

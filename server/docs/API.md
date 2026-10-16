@@ -17,7 +17,6 @@ Response:
 "name": "Nike Air Max",
 "description": "Comfortable running shoes",
 "price": "4500.00",
-"stock": 10,
 "category_id": 1,
 "category_name": "Shoes",
 "image_url: "https://example.com/nike-front.jpg"
@@ -35,6 +34,7 @@ Body:
 "description": "Comfortable running shoes",
 "price": 4500,
 "stock": 10,
+"condition", "new",
 "category_id": 1
 }
 
@@ -53,6 +53,7 @@ Response:
 "price": "5000.00",
 "stock": 15,
 "category_id": 1,
+"condition": "used",
 "category_name": "Shoes",
 "created_at": "...",
 "updated_at": "...",
@@ -81,6 +82,7 @@ Body:
 "description": "Updated running shoes",
 "price": 5000,
 "stock": 15,
+"condition": "new"
 "category_id": 1
 }
 

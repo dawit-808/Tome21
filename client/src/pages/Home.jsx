@@ -16,7 +16,7 @@ export default function Home() {
     const getData = async () => {
       try {
         const categories = await axios.get(`${apiEndpoint}/categories`);
-        const products = await axios.get(`${apiEndpoint}/products/featured`);
+        const products = await axios.get(`${apiEndpoint}/products/top`);
         setCategories(categories.data);
         setProducts(products.data);
       } catch (error) {

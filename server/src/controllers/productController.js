@@ -4,7 +4,7 @@ import {
   updateProduct,
   deleteProduct,
   getTopProducts,
-  getProductsByCategory,
+  getProducts,
 } from "../models/productModel.js";
 
 export const getFeaturedProducts = async (req, res) => {
@@ -19,18 +19,14 @@ export const getFeaturedProducts = async (req, res) => {
   }
 };
 
-export const getProductsByCat = async (req, res) => {
+export const getProductsController = async (req, res) => {
   try {
-    const { categoryId } = req.params;
-
-    const products = await getProductsByCategory(categoryId);
-
+    const products = await getProducts(req.query);
     res.status(200).json(products);
   } catch (error) {
-    console.error("Error getting products by category:", error);
-
+    console.error("Error getting products:", error);
     res.status(500).json({
-      error: "Failed to get products by category",
+      error: "Failed to get products",
     });
   }
 };
@@ -59,11 +55,12 @@ export const getProduct = async (req, res) => {
 
 export const createProductController = async (req, res) => {
   try {
-    const { name, description, price, stock, category_id } = req.body;
+    const { name, description, price, stock, condition, category_id } =
+      req.body;
 
-    if (!name || price === undefined || !category_id) {
+    if (!name || !condition || price === undefined || !category_id) {
       return res.status(400).json({
-        error: "name, price, and category_id are required",
+        error: "name, price, condition and category_id are required",
       });
     }
 
@@ -72,6 +69,7 @@ export const createProductController = async (req, res) => {
       description,
       price,
       stock: stock ?? 0,
+      condition,
       category_id,
     });
 
@@ -89,11 +87,18 @@ export const updateProductController = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { name, description, price, stock, category_id } = req.body;
+    const { name, description, price, stock, condition, category_id } =
+      req.body;
 
-    if (!name || price === undefined || stock === undefined || !category_id) {
+    if (
+      !name ||
+      !condition ||
+      price === undefined ||
+      stock === undefined ||
+      !category_id
+    ) {
       return res.status(400).json({
-        error: "name, price, stock, and category_id are required",
+        error: "name, condition, price, stock, and category_id are required",
       });
     }
 
@@ -102,6 +107,7 @@ export const updateProductController = async (req, res) => {
       description,
       price,
       stock,
+      condition,
       category_id,
     });
 

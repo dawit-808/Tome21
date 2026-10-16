@@ -9,7 +9,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     image_url TEXT,
     role VARCHAR(20) NOT NULL DEFAULT 'customer'
-CHECK (role IN ('customer', 'admin')),
+    CHECK (role IN ('customer', 'admin')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -40,6 +40,9 @@ CREATE TABLE products (
 
     stock INTEGER NOT NULL DEFAULT 0
         CHECK (stock >= 0),
+
+    condition VARCHAR(20) NOT NULL DEFAULT 'new'
+    CHECK (condition IN ('new', 'used')),
 
     category_id BIGINT NOT NULL
         REFERENCES categories(id),
