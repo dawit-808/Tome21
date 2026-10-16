@@ -56,22 +56,24 @@ export default function Home() {
         <section>
           <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
             {categories.map((category) => (
-              <div
-                key={category.id}
-                className="flex flex-col items-center group cursor-pointer"
-              >
-                <div className="w-16 h-16 bg-white rounded-full overflow-hidden shadow-sm flex items-center justify-center text-[#3e9d24] group-hover:text-white transition-all duration-300 transform group-hover:-translate-y-1">
-                  <img
-                    src={category.image_url}
-                    alt={category.name || "Category image"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+              <Link to={`/products?category=${category.id}`}>
+                <div
+                  key={category.id}
+                  className="flex flex-col items-center group cursor-pointer"
+                >
+                  <div className="w-16 h-16 bg-white rounded-full overflow-hidden shadow-sm flex items-center justify-center text-[#3e9d24] group-hover:text-white transition-all duration-300 transform group-hover:-translate-y-1">
+                    <img
+                      src={category.image_url}
+                      alt={category.name || "Category image"}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
 
-                <span className="text-sm font-medium mt-2 text-gray-700 group-hover:text-[#3e9d24] transition-colors">
-                  {category.name}
-                </span>
-              </div>
+                  <span className="text-sm font-medium mt-2 text-gray-700 group-hover:text-[#3e9d24] transition-colors">
+                    {category.name}
+                  </span>
+                </div>
+              </Link>
             ))}
           </div>
         </section>

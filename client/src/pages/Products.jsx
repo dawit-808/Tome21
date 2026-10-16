@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ProductCard from "../components/ProductCard";
@@ -9,20 +10,28 @@ const apiEndpoint = import.meta.env.VITE_API_URL;
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  // const [loading, setLoading] = useState(true)
 
-  // parameters for filtering products
-  const [categoryId, setcategoryId] = useState("");
+  // Initialize search params from React Router
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryIdFromUrl = searchParams.get("category") || "";
+
+  // Parameters for filtering products
+  const [categoryId, setcategoryId] = useState(categoryIdFromUrl);
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [condition, setCondition] = useState("");
 
+  // Keep state synced if the URL changes while already on the page
+  useEffect(() => {
+    const urlCat = searchParams.get("category") || "";
+    setcategoryId(urlCat);
+  }, [searchParams]);
+
   const categoryIdName =
     categories.find((cat) => String(cat.id) === categoryId)?.name ||
     "All Categories";
 
-  // Reusable function to fetch products based on current filters
   const fetchProducts = async () => {
     try {
       const hasFilters =
@@ -52,7 +61,6 @@ export default function Products() {
     }
   };
 
-  // Handler for the "Apply Filter"  (Price & Condition)
   const handleApplyFilters = () => {
     fetchProducts();
   };
@@ -75,6 +83,16 @@ export default function Products() {
     fetchProducts();
   }, [categoryId, sortBy]);
 
+  // Modify category click buttons to update the URL search params cleanly
+  const handleCategorySelect = (id) => {
+    setcategoryId(id);
+    if (id) {
+      setSearchParams({ category: id });
+    } else {
+      setSearchParams({});
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -91,10 +109,10 @@ export default function Products() {
             <ul className="space-y-1.5">
               <li>
                 <button
-                  onClick={() => setcategoryId("")}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium ${
+                  onClick={() => handleCategorySelect("")}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all ${
                     categoryId === ""
-                      ? "bg-[#3e9d24] text-white"
+                      ? "bg-[#3e9d24] text-white shadow-sm"
                       : "text-gray-700 hover:bg-green-50"
                   }`}
                 >
@@ -106,7 +124,7 @@ export default function Products() {
                 return (
                   <li key={cat.id}>
                     <button
-                      onClick={() => setcategoryId(String(cat.id))}
+                      onClick={() => handleCategorySelect(String(cat.id))}
                       className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200 text-left ${
                         isActive
                           ? "bg-[#3e9d24] text-white shadow-sm"
@@ -142,6 +160,7 @@ export default function Products() {
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
+                            strokeLinejoin="round"
                             d="M4.5 12.75l6 6 9-13.5"
                           />
                         </svg>
@@ -152,6 +171,7 @@ export default function Products() {
               })}
             </ul>
           </div>
+
           {/* Condition Filter */}
           <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
             <h3 className="font-bold text-gray-800 mb-4 uppercase tracking-wider text-sm">
@@ -179,6 +199,7 @@ export default function Products() {
               </label>
             </div>
           </div>
+
           {/* Price Filter */}
           <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
             <h3 className="font-bold text-gray-800 mb-4 uppercase tracking-wider text-sm">
@@ -220,17 +241,35 @@ export default function Products() {
               <span className="text-[#3e9d24] font-bold">{categoryIdName}</span>
             </h1>
 
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-gray-500">Sort by:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="border border-gray-200 rounded px-3 py-1.5 focus:outline-none focus:border-[#3e9d24] cursor-pointer"
-              >
-                <option value="newest">Newest Arrivals</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-              </select>
+            <div className="flex items-center gap-2.5 text-sm">
+              <span className="text-gray-500 font-medium">Sort by:</span>
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="appearance-none bg-gray-50/80 border border-gray-200 text-gray-700 rounded-lg pl-3 pr-9 py-2 focus:outline-none focus:border-[#3e9d24] focus:ring-1 focus:ring-[#3e9d24] cursor-pointer transition-all duration-200 hover:border-gray-300 font-medium text-xs sm:text-sm"
+                >
+                  <option value="newest">Newest Arrivals</option>
+                  <option value="price_asc">Price: Low to High</option>
+                  <option value="price_desc">Price: High to Low</option>
+                </select>
+                {/* Custom Dropdown Arrow Icon */}
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
